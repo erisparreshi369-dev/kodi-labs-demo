@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kodi Labs (@kodi.labs) — Software, POS, Web & AI Automation</title>
+  <style>
+    :root {
+      --bg: #0b0f16;
+      --card: #141a24;
+      --card2: #1a2230;
+      --cyan: #00e5ff;
+      --blue: #2979ff;
+      --green: #22c55e;
+      --red: #ef4444;
+      --text: #f5f8ff;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                        linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .container { max-width: 1080px; margin: 0 auto; padding: 24px 18px 80px; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 14px; padding-bottom: 24px; border-bottom: 1px solid #1e293b;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo-badge {
+      width: 44px; height: 44px; border-radius: 12px; background: #0d1522;
+      border: 2px solid var(--cyan); display: grid; place-items: center;
+      font-weight: 800; color: var(--cyan); font-family: monospace; font-size: 16px;
+    }
+    .nav-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px;
+      border-radius: 10px; font-weight: 700; text-decoration: none; cursor: pointer;
+      border: none; font-size: 14px; transition: 0.15s ease;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--cyan), var(--blue)); color: #06101c; }
+    .btn-outline { background: var(--card); color: var(--text); border: 1px solid #2d3a4f; }
+    .btn-outline:hover { border-color: var(--cyan); }
+    .hero { text-align: center; padding: 48px 10px 36px; }
+    .pill {
+      display: inline-block; padding: 6px 14px; border-radius: 999px;
+      background: rgba(0,229,255,0.1); border: 1px solid var(--cyan);
+      color: var(--cyan); font-size: 13px; font-weight: 700; margin-bottom: 16px;
+    }
+    .hero h1 { font-size: clamp(28px, 5vw, 48px); line-height: 1.15; margin-bottom: 14px; }
+    .hero h1 span { color: var(--cyan); }
+    .hero p { color: var(--muted); max-width: 680px; margin: 0 auto 24px; font-size: 17px; }
+    .tabs { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 24px; }
+    .tab {
+      padding: 11px 20px; border-radius: 12px; background: var(--card);
+      border: 1px solid #263246; color: var(--muted); font-weight: 700; cursor: pointer;
+    }
+    .tab.active { background: rgba(0,229,255,0.12); border-color: var(--cyan); color: var(--text); }
+    .panel {
+      display: none; background: var(--card); border: 1px solid #263246;
+      border-radius: 20px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+    .panel.active { display: block; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 20px; }
+    .box { background: var(--card2); border-radius: 14px; padding: 18px; border: 1px solid #283548; }
+    .box h3 { font-size: 16px; color: var(--cyan); margin-bottom: 12px; }
+    .tables-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .table-tile {
+      padding: 14px 10px; border-radius: 12px; background: #101722;
+      border: 2px solid #2a374c; text-align: center; cursor: pointer;
+    }
+    .table-tile.selected { border-color: var(--cyan); background: rgba(0,229,255,0.08); }
+    .table-tile.occupied { border-color: var(--blue); }
+    .table-tile small { display: block; color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .menu-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .chip {
+      padding: 8px 12px; border-radius: 8px; background: #101722;
+      border: 1px solid #334155; color: var(--text); cursor: pointer; font-size: 13px;
+    }
+    .chip:hover { border-color: var(--cyan); }
+    .stat-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #232f42; font-size: 14px; }
+    .slots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 12px 0; }
+    .slot {
+      padding: 10px; text-align: center; border-radius: 10px; background: #101722;
+      border: 1px solid #334155; cursor: pointer; font-weight: 600;
+    }
+    .slot.selected { background: var(--cyan); color: #06101c; border-color: var(--cyan); }
+    input, select {
+      width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #334155;
+      background: #0e141e; color: var(--text); margin-bottom: 10px; font-size: 14px;
+    }
+    .chat-box { height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 10px; background: #0d131d; border-radius: 12px; margin-bottom: 12px; }
+    .msg { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 14px; }
+    .msg.user { align-self: flex-end; background: var(--blue); color: #fff; }
+    .msg.bot { align-self: flex-start; background: #1a2636; border: 1px solid var(--cyan); }
+    .toast {
+      margin-top: 12px; padding: 12px; border-radius: 10px;
+      background: rgba(34,197,94,0.14); border: 1px solid var(--green); color: #86efac;
+      font-size: 14px; display: none;
+    }
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-top: 36px; }
+    .price-card { background: var(--card); border: 1px solid #263246; border-radius: 16px; padding: 20px; }
+    .price-card strong { display: block; font-size: 26px; color: var(--cyan); margin: 8px 0; }
+    .price-card ul { list-style: none; color: var(--muted); font-size: 14px; }
+    .price-card li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo-badge">&lt;/&gt;</div>
+        <div>
+          <div style="font-weight:800;font-size:18px;">Kodi Labs</div>
+          <div style="color:var(--muted);font-size:13px;">@kodi.labs • Tirana / Remote</div>
+        </div>
+      </div>
+      <div class="nav-btns">
+        <a class="btn btn-outline" href="https://instagram.com/kodi.labs" target="_blank">Instagram</a>
+        <a class="btn btn-primary" href="https://wa.me/355682036158" target="_blank">WhatsApp: +355 68 203 6158</a>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="pill">LIVE INTERACTIVE DEMO HUB</div>
+      <h1 id="hero-title">Software, POS &amp; <span>AI Automations</span> for Albanian Businesses</h1>
+      <p id="hero-sub">Testoni sistemet tona direkt në browser — pa instalim, pa rrezik. Zgjidhni një demo më poshtë:</p>
+    </section>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('pos', this)">1. ebar-pos (Bare &amp; Kafene)</button>
+      <button class="tab" onclick="switchTab('booking', this)">2. Rezervime 24/7 (Klinika &amp; Sallone)</button>
+      <button class="tab" onclick="switchTab('ai', this)">3. AI Sales Bot (IG &amp; WhatsApp)</button>
+    </div>
+
+    <!-- DEMO 1: ebar-pos -->
+    <div id="tab-pos" class="panel active">
+      <div class="grid-2">
+        <div class="box">
+          <h3>Tavolinat Live (Kliko per porosi)</h3>
+          <div class="tables-grid" id="tables-grid"></div>
+          <div class="menu-row">
+            <button class="chip" onclick="addItem('Espresso', 120)">+ Espresso (120 L)</button>
+            <button class="chip" onclick="addItem('Macchiato', 150)">+ Macchiato (150 L)</button>
+            <button class="chip" onclick="addItem('Ujë 0.5L', 100)">+ Ujë (100 L)</button>
+            <button class="chip" onclick="addItem('Birrë Korça', 250)">+ Birrë (250 L)</button>
+          </div>
+        </div>
+        <div class="box">
+          <h3>Porosia &amp; Z-Report (<span id="active-table-label">Tavolina 01</span>)</h3>
+          <div id="order-summary"></div>
+          <div class="stat-line"><span>Xhiro Totale Sot (Z-Report)</span><strong id="z-total" style="color:var(--green)">0 L</strong></div>
+          <div class="stat-line"><span>Statusi</span><strong style="color:var(--cyan)">100% OFFLINE OK</strong></div>
+          <div style="margin-top:14px;display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="closeTable()">Mbyll Tavolinën &amp; Printo</button>
+            <a class="btn btn-outline" href="https://wa.me/355682036158?text=Dua%207%20dite%20prove%20falas%20per%20ebar-pos" target="_blank">7 Ditë Falas</a>
+          </div>
+          <div id="pos-toast" class="toast"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEMO 2: BOOKING -->
+    <div id="tab-booking" class="panel">
+      <div class="grid-2">
+        <div class="box">
+          <h3>Rezervo Online 24/7</h3>
+          <select id="bk-service">
+            <option>Kontroll Dentar + Pastrim (30 min)</option>
+            <option>Trajtim Estetik (45 min)</option>
+            <option>Konsultë Fillestare (Falas)</option>
+          </select>
+          <div class="slots-grid" id="slots-grid"></div>
+          <input id="bk-name" placeholder="Emri juaj (p.sh. Ardit)" />
+          <input id="bk-phone" placeholder="WhatsApp (+355 6X XXX XXXX)" />
+          <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="confirmBooking()">Konfirmo Rezervimin</button>
+          <div id="bk-toast" class="toast"></div>
+        </div>
+        <div class="box">
+          <h3>Si funksionon automatizimi</h3>
+          <div class="stat-line"><span>Shpejtësia e faqes</span><strong style="color:var(--green)">99 / 100</strong></div>
+          <div class="stat-line"><span>Konfirmimi</span><strong style="color:var(--cyan)">WhatsApp Automatik</strong></div>
+          <div class="stat-line"><span>Kujtuesi (2h para)</span><strong style="color:var(--green)">-70% No-Shows</strong></div>
+          <div class="stat-line"><span>Orari</span><strong>24/7 (edhe natën)</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEMO 3: AI BOT -->
+    <div id="tab-ai" class="panel">
+      <div class="box">
+        <h3>Testo AI Sales Bot (Shqip / English)</h3>
+        <div class="chat-box" id="chat-box">
+          <div class="msg bot">Përshëndetje! Jam asistenti AI i Kodi Labs. Pyetni për çmimin, oraret ose një demo!</div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          <button class="chip" onclick="askBot('Sa kushton sistemi POS?')">Sa kushton POS?</button>
+          <button class="chip" onclick="askBot('A punon pa internet?')">A punon pa internet?</button>
+          <button class="chip" onclick="askBot('Dua një faqe web me rezervime')">Faqe web &amp; rezervime</button>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input id="chat-input" placeholder="Shkruaj një pyetje..." style="margin:0;" onkeydown="if(event.key==='Enter')sendChat()" />
+          <button class="btn btn-primary" onclick="sendChat()">Dërgo</button>
+        </div>
+      </div>
+    </div>
+
+    <section class="pricing-grid">
+      <div class="price-card">
+        <div style="color:var(--muted);font-weight:700;">EBAR-POS</div>
+        <strong>€150 një herë</strong>
+        <ul>
+          <li>✔ 7 ditë provë falas</li>
+          <li>✔ Punon 100% offline</li>
+          <li>✔ PIN stafi, magazinë &amp; Z-report</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div style="color:var(--muted);font-weight:700;">WEB &amp; REZERVIME 24/7</div>
+        <strong>€150 – €300</strong>
+        <ul>
+          <li>✔ Faqe ultra e shpejtë (99/100)</li>
+          <li>✔ Kalendar rezervimesh + WhatsApp</li>
+          <li>✔ Demo falas para pagesës</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div style="color:var(--muted);font-weight:700;">AI &amp; AUTOMATIZIME</div>
+        <strong>Custom / €25+ muaj</strong>
+        <ul>
+          <li>✔ Auto-përgjigje 24/7 në IG &amp; WhatsApp</li>
+          <li>✔ Web scrapers &amp; gjetje klientësh</li>
+          <li>✔ Email bots &amp; integrime API</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function switchTab(id, el) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById('tab-' + id).classList.add('active');
+      el.classList.add('active');
+    }
+
+    // POS State
+    const tables = [
+      { id: 1, name: 'Tavolina 01', total: 1450 },
+      { id: 2, name: 'Tavolina 02', total: 2800 },
+      { id: 3, name: 'Tavolina 03', total: 0 },
+      { id: 4, name: 'Tavolina 04', total: 950 },
+      { id: 5, name: 'Tavolina 05', total: 0 },
+      { id: 6, name: 'Tavolina 06', total: 1200 },
+    ];
+    let activeTable = 1;
+    let zTotal = 48500;
+
+    function renderPos() {
+      const grid = document.getElementById('tables-grid');
+      grid.innerHTML = tables.map(t => `
+        <div class="table-tile ${t.id===activeTable?'selected':''} ${t.total>0?'occupied':''}" onclick="activeTable=${t.id};renderPos();">
+          <strong>${t.name}</strong>
+          <small>${t.total>0 ? t.total.toLocaleString()+' L' : 'E Lirë'}</small>
+        </div>`).join('');
+      const cur = tables.find(t => t.id === activeTable);
+      document.getElementById('active-table-label').textContent = cur.name;
+      document.getElementById('order-summary').innerHTML = `<div class="stat-line"><span>Fatura Aktive</span><strong>${cur.total.toLocaleString()} L</strong></div>`;
+      document.getElementById('z-total').textContent = zTotal.toLocaleString() + ' L';
+    }
+    function addItem(name, price) {
+      const cur = tables.find(t => t.id === activeTable);
+      cur.total += price;
+      renderPos();
+    }
+    function closeTable() {
+      const cur = tables.find(t => t.id === activeTable);
+      if (cur.total === 0) return;
+      zTotal += cur.total;
+      const paid = cur.total;
+      cur.total = 0;
+      renderPos();
+      const toast = document.getElementById('pos-toast');
+      toast.style.display = 'block';
+      toast.textContent = `Fatura ${paid.toLocaleString()} L u mbyll dhe u shtua në Z-Report!`;
+    }
+    renderPos();
+
+    // Booking State
+    const slots = ['09:30', '11:00', '13:30', '15:00', '17:00', '18:30'];
+    let selectedSlot = '15:00';
+    function renderSlots() {
+      document.getElementById('slots-grid').innerHTML = slots.map(s =>
+        `<div class="slot ${s===selectedSlot?'selected':''}" onclick="selectedSlot='${s}';renderSlots();">${s}</div>`
+      ).join('');
+    }
+    function confirmBooking() {
+      const name = document.getElementById('bk-name').value || 'Klienti';
+      const t = document.getElementById('bk-toast');
+      t.style.display = 'block';
+      t.textContent = `✔ Rezervimi u konfirmua për ${name} në orën ${selectedSlot}. Kujtuesi në WhatsApp u programua automatikisht!`;
+    }
+    renderSlots();
+
+    // AI Chat
+    function askBot(q) {
+      document.getElementById('chat-input').value = q;
+      sendChat();
+    }
+    function sendChat() {
+      const inp = document.getElementById('chat-input');
+      const q = inp.value.trim();
+      if (!q) return;
+      const box = document.getElementById('chat-box');
+      box.innerHTML += `<div class="msg user">${q}</div>`;
+      inp.value = '';
+      let ans = 'Faleminderit! Na shkruani në WhatsApp +355 68 203 6158 ose DM @kodi.labs dhe ju dërgojmë një demo falas brenda 10 minutash.';
+      const ql = q.toLowerCase();
+      if (ql.includes('pos') || ql.includes('kushton')) {
+        ans = 'ebar-pos kushton vetëm €150 një herë e mirë (ose €100 + €20/muaj), me 7 ditë provë falas!';
+      } else if (ql.includes('internet') || ql.includes('offline')) {
+        ans = 'Po! ebar-pos punon 100% lokalisht edhe pa internet — nuk bllokohet kurrë.';
+      } else if (ql.includes('web') || ql.includes('rezerv')) {
+        ans = 'Ndërtojmë faqe web + rezervime online 24/7 me konfirmime në WhatsApp. Ju përgatisim një demo falas para se të paguani!';
+      }
+      setTimeout(() => {
+        box.innerHTML += `<div class="msg bot">${ans}</div>`;
+        box.scrollTop = box.scrollHeight;
+      }, 350);
+    }
+
+    // Instant Niche Preview via URL params (?name=Finesa+Dental&tab=booking)
+    (function initCustomPreview() {
+      const params = new URLSearchParams(window.location.search);
+      const bizName = params.get('name');
+      const tab = params.get('tab');
+      if (bizName) {
+        document.getElementById('hero-title').innerHTML = `Demo e Përgatitur për <span>${bizName.replace(/</g, '')}</span>`;
+        document.getElementById('hero-sub').textContent = `Ky është një preview live i ndërtuar nga Kodi Labs (@kodi.labs) posaçërisht për ${bizName}.`;
+      }
+      if (tab && ['pos', 'booking', 'ai'].includes(tab)) {
+        const btn = document.querySelector(`.tab[onclick*="'${tab}'"]`);
+        if (btn) switchTab(tab, btn);
+      }
+    })();
+  </script>
+</body>
+</html>
